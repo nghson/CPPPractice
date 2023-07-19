@@ -11,20 +11,34 @@ struct Cell {
 };
 
 void greet();
-void parseFile(string fileName, vector<vector<Cell>> &grid);
-vector<vector<Cell>> makeRandomGrid(int x, int y);
-void printMap(const vector<vector<Cell>> &grid);
-vector<vector<Cell>> advance(const vector<vector<Cell>> &grid);
+vector<vector<Cell>> parseFile(string fileName);
+vector<Cell> makeRandomGrid(int x, int y);
+vector<Cell> advance(const vector<Cell> &grid);
+void printMap(const vector<Cell> &grid, int x, int y);
 
+void testPrintGrid(void (*printer)(const vector<Cell>&, int, int))
+{
+        vector<Cell> grid(3 * 3, {'-', 0});
+        vector<int> points = {0, 1, 2, 3, 7};
+        for (int num : points) {
+                grid[num].mark = 'X';
+        }
+        string expected = "XXX\nX--\n-X-";
+        cout << "Expected: " << '\n';
+        cout << expected << '\n';
+        cout << "Result: " << '\n';
+        printer(grid, 3, 3);
+}
 
 int main()
 {
-        vector<vector<Cell>> grid = makeRandomGrid(5, 5);
+        vector<Cell> grid = makeRandomGrid(5, 5);
         greet();
-        for (int i = 0; i < 3; i++) {
-                grid = advance(grid);
-                printMap(grid);
-        }
+        printMap(grid, 5, 5);
+        //for (int i = 0; i < 3; i++) {
+        //        grid = advance(grid);
+        //        printMap(grid);
+        //}
 }
 
 void greet()
@@ -32,40 +46,38 @@ void greet()
         cout << "Welcome to the Game of life\n\n";
 }
 
-void printMap(const vector<vector<Cell>> &grid)
+void printMap(const vector<Cell>& grid, int x, int y)
 {
-        int x = grid.size();
-        int y = grid[0].size(); 
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
-                        Cell cell = grid[i][j];
+                        Cell cell = grid[i * y + j];
                         cout << cell.mark;
                 }
                 cout << '\n';
         }
 }
 
-void parseFile(string filename, vector<vector<Cell>> &grid)
-{
+//vector<vector<Cell>> parseFile(string fileName)
+//{
+//
+//}
 
-}
-
-vector<vector<Cell>> makeRandomGrid(int x, int y)
+vector<Cell> makeRandomGrid(int x, int y)
 {
-        vector<vector<Cell>> grid(x, vector<Cell>(y, {'-', 0}));
+        vector<Cell> grid(x * y, {'-', 0});
         std::default_random_engine e;
         std::uniform_real_distribution<double> u(0, 1);
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
                         if (u(e) > 0.5) {
-                                grid[i][j].mark = 'X';
+                                grid[i * y + j].mark = 'X';
                         }
                 }
         }
         return grid;
 }
 
-vector<vector<Cell>> advance(const vector<vector<Cell>> &grid)
-{
-
-}
+//vector<Cell> advance(const vector<Cell> &grid)
+//{
+//
+//}
