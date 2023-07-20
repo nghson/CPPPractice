@@ -3,6 +3,8 @@
 #include <string>
 #include <random>
 #include <algorithm>
+#include <fstream>
+#include <exception>
 
 using std::cout, std::vector, std::string;
 
@@ -11,23 +13,40 @@ struct Cell {
         unsigned int age;
 };
 
+struct GridMap {
+        vector<Cell> grid;
+        int x;
+        int y;
+};
+
 void greet();
-vector<vector<Cell>> parseFile(string fileName);
+GridMap parseFile(const string& filename);
 vector<Cell> makeRandomGrid(int x, int y);
+
 vector<Cell> advance(const vector<Cell> &grid, int x, int y);
-void printMap(const vector<Cell> &grid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
 Cell nextGen(const Cell& c, int neighbors);
 
+void printMap(const vector<Cell> &grid, int x, int y);
+
 int main()
 {
-        int x = 5;
-        int y = 5;
-        vector<Cell> grid = makeRandomGrid(5, 5);
         greet();
         cout << "Game start!\n\n";
-        printMap(grid, x, y);
-        for (int i = 0; i < 3; i++) {
+        string filename = "grid.txt";
+
+        //int x = 5;
+        //int y = 5;
+
+        //vector<Cell> grid = makeRandomGrid(5, 5);
+        GridMap g_map = parseFile(filename);
+
+        printMap(g_map.grid, g_map.x, g_map.y);
+
+        vector<Cell> grid = g_map.grid;
+        int x = g_map.x;
+        int y = g_map.y;
+        for (int i = 0; i < 5; i++) {
                 grid = advance(grid, x, y);
                 cout << "Round " << i + 1 << '\n';
                 printMap(grid, x, y);
@@ -51,10 +70,32 @@ void printMap(const vector<Cell>& grid, int x, int y)
         cout << "\n";
 }
 
-//vector<vector<Cell>> parseFile(string fileName)
-//{
-//
-//}
+GridMap parseFile(const string& filename)
+{
+        std::ifstream file(filename);
+        if (!file) {
+                throw std::runtime_error("There is no file " + filename);
+        }
+
+        int x;
+        int y;
+        file >> x >> y >> std::ws;
+        vector<Cell> grid(x * y, {'-', 0});
+
+        string s;
+        for (int i = 0; i < x; ++i) {
+                std::getline(file, s);
+                for (int j = 0; j < y; ++j) {
+                        if (s[j] == 'X') {
+                                grid[i * y + j] = Cell{'x', 1};
+                        }
+                }
+        }
+
+        GridMap g_map = {grid, x, y};
+        file.close();
+        return g_map;
+}
 
 vector<Cell> makeRandomGrid(int x, int y)
 {
