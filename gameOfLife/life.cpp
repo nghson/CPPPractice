@@ -6,7 +6,7 @@
 #include <fstream>
 #include <exception>
 
-using std::cout, std::vector, std::string;
+using std::cout, std::cin, std::vector, std::string;
 
 struct Cell {
         char mark;
@@ -19,7 +19,7 @@ struct GridMap {
         int y;
 };
 
-void greet();
+GridMap initMap(char source, const string& filename, int x, int y);
 GridMap parseFile(const string& filename);
 vector<Cell> makeRandomGrid(int x, int y);
 
@@ -31,31 +31,35 @@ void printMap(const vector<Cell> &grid, int x, int y);
 
 int main()
 {
-        greet();
-        cout << "Game start!\n\n";
-        string filename = "grid.txt";
+        cout << "Welcome to the Game of life\nGame start!\n\n";
 
-        //int x = 5;
-        //int y = 5;
-
-        //vector<Cell> grid = makeRandomGrid(5, 5);
-        GridMap g_map = parseFile(filename);
+        char source;
+        string filename;
+        int x;
+        int y;
+        cout << "Read from (f)ile, or (r)andom? ";
+        cin >> source;
+        if (source == 'f') {
+                cout << "Grid input file name? ";
+                cin  >> filename;
+        } else if (source == 'r') {
+                cout << "How many rows? ";
+                cin >> x;
+                cout << "How many columns? ";
+                cin >> y;
+        } else {
+                cout << "Unknown option, try again";
+        }
+        GridMap g_map = initMap(source, filename, x, y);
 
         printMap(g_map.grid, g_map.x, g_map.y);
 
         vector<Cell> grid = g_map.grid;
-        int x = g_map.x;
-        int y = g_map.y;
         for (int i = 0; i < 5; i++) {
                 grid = advance(grid, x, y);
                 cout << "Round " << i + 1 << '\n';
                 printMap(grid, x, y);
         }
-}
-
-void greet()
-{
-        cout << "Welcome to the Game of life\n\n";
 }
 
 void printMap(const vector<Cell>& grid, int x, int y)
