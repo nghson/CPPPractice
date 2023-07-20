@@ -103,21 +103,12 @@ void testNextGen()
         cout << n_very_old.mark << ", " << n_very_old.age << "\n\n";
 }
 
-void testRandomGrid()
-{
-        for (int i = 0; i < 5; ++i) {
-                vector<Cell> grid = makeRandomGrid(3, 3);
-                printMap(grid, 3, 3);
-        }
-}
-
 int main()
 {
         int x = 5;
         int y = 5;
         vector<Cell> grid = makeRandomGrid(5, 5);
         greet();
-        testRandomGrid();
         cout << "Game start!\n\n";
         printMap(grid, x, y);
         for (int i = 0; i < 3; i++) {
