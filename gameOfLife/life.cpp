@@ -50,6 +50,7 @@ int main()
         //} else {
         //        cout << "Unknown option, try again";
         //}
+
         GridMap g_map;
         //initMap(source, filename, x, y, g_map);
         initMap('f', "grid.txt", x, y, g_map);
@@ -61,7 +62,7 @@ int main()
         y = g_map.y;
         vector<Cell> newGrid(x * y, {'-', 0});
 
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 20; i++) {
                 advance(grid, newGrid, x, y);
                 cout << "Round " << i + 1 << '\n';
                 printMap(grid, x, y);
@@ -130,10 +131,10 @@ vector<Cell> makeRandomGrid(int x, int y)
         return grid;
 }
 
-void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y)
+void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
 {
         for (int i = 0; i < x; ++i) {
-                for (int j = 0; j < x; ++j) {
+                for (int j = 0; j < y; ++j) {
                         Cell c = grid[i * y + j];
                         int neighbors = n_neighbors(grid, x, y, i, j);
 
