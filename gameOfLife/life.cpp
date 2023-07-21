@@ -27,57 +27,69 @@ void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
 void updateCell(int age, int neighbors, Cell& new_c);
 
+void play(vector<Cell>& grid, int x, int y);
 void printMap(const vector<Cell> &grid, int x, int y);
 
 int main()
 {
         cout << "Welcome to the Game of life\nGame start!\n\n";
 
-        char source;
+        char command;
         string filename;
         int x;
         int y;
+        bool flag = false;
+        GridMap g_map;
         cout << "Read from (f)ile, or (r)andom? ";
-        cin >> source;
-        if (source == 'f') {
-                cout << "Grid input file name? ";
-                cin  >> filename;
-        } else if (source == 'r') {
-                cout << "How many rows? ";
-                cin >> x;
-                cout << "How many columns? ";
-                cin >> y;
-        } else {
-                cout << "Unknown option, try again";
+        while (!flag) {
+                cin >> command;
+                if (command == 'f') {
+                        cout << "Grid input file name? ";
+                        cin  >> filename;
+                        parseFile(filename, g_map);
+                        flag = true;
+                } else if (command == 'r') {
+                        cout << "How many rows? ";
+                        cin >> x;
+                        cout << "How many columns? ";
+                        cin >> y;
+                        vector<Cell> grid(x * y, {'-', 0});
+                        makeRandomGrid(x, y, grid);
+                        g_map = {grid, x, y};
+                        flag = true;
+                } else {
+                        cout << "Unknown option, try again ";
+                }
         }
 
-        GridMap g_map;
-        initMap(source, filename, x, y, g_map);
-        //initMap('f', "grid.txt", x, y, g_map);
-
-        printMap(g_map.grid, g_map.x, g_map.y);
 
         vector<Cell>& grid = g_map.grid;
         x = g_map.x;
         y = g_map.y;
-        vector<Cell> newGrid(x * y, {'-', 0});
-
-        for (int i = 0; i < 20; i++) {
-                advance(grid, newGrid, x, y);
-                cout << "Round " << i + 1 << '\n';
-                printMap(grid, x, y);
-        }
+        printMap(grid, x, y);
+        play(grid, x, y);
+        cout << "Have a nice life!" << std::endl;
 }
 
-void initMap(char source, const string& filename, int x, int y, GridMap& g_map)
+void play(vector<Cell>& grid, int x, int y)
 {
-        if (source == 'f') {
-                parseFile(filename, g_map);
-        } else if (source == 'r') {
-                vector<Cell> grid(x * y, {'-', 0});
-                makeRandomGrid(x, y, grid);
-                g_map = {grid, x, y};
+        bool quit = false;
+        char command;
+        vector<Cell> newGrid(x * y, {'-', 0});
+        while (!quit) { 
+                cout << "a)nimate, t)ick, s)creenshot, q)uit? ";
+                cin >> command;
+                if (command == 't') {
+                        advance(grid, newGrid, x, y);
+                        printMap(grid, x, y);
+                }
+                else if (command == 'q') {
+                        quit = true;
+                } else {
+                        cout << "Unknown option, try again\n";
+                }
         }
+
 }
 
 void printMap(const vector<Cell>& grid, int x, int y)
