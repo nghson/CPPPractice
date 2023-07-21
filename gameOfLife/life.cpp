@@ -19,13 +19,13 @@ struct GridMap {
         int y;
 };
 
-GridMap initMap(char source, const string& filename, int x, int y);
-GridMap parseFile(const string& filename);
+void initMap(char source, const string& filename, int x, int y, GridMap& g_map);
+void parseFile(const string& filename, GridMap& g_map);
 vector<Cell> makeRandomGrid(int x, int y);
 
-vector<Cell> advance(const vector<Cell> &grid, int x, int y);
+void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
-Cell nextGen(const Cell& c, int neighbors);
+void updateCell(int age, int neighbors, Cell& new_c);
 
 void printMap(const vector<Cell> &grid, int x, int y);
 
@@ -37,28 +37,41 @@ int main()
         string filename;
         int x;
         int y;
-        cout << "Read from (f)ile, or (r)andom? ";
-        cin >> source;
-        if (source == 'f') {
-                cout << "Grid input file name? ";
-                cin  >> filename;
-        } else if (source == 'r') {
-                cout << "How many rows? ";
-                cin >> x;
-                cout << "How many columns? ";
-                cin >> y;
-        } else {
-                cout << "Unknown option, try again";
-        }
-        GridMap g_map = initMap(source, filename, x, y);
+        //cout << "Read from (f)ile, or (r)andom? ";
+        //cin >> source;
+        //if (source == 'f') {
+        //        cout << "Grid input file name? ";
+        //        cin  >> filename;
+        //} else if (source == 'r') {
+        //        cout << "How many rows? ";
+        //        cin >> x;
+        //        cout << "How many columns? ";
+        //        cin >> y;
+        //} else {
+        //        cout << "Unknown option, try again";
+        //}
+        GridMap g_map;
+        //initMap(source, filename, x, y, g_map);
+        initMap('f', "grid.txt", x, y, g_map);
 
         printMap(g_map.grid, g_map.x, g_map.y);
 
-        vector<Cell> grid = g_map.grid;
-        for (int i = 0; i < 5; i++) {
-                grid = advance(grid, x, y);
+        vector<Cell>& grid = g_map.grid;
+        x = g_map.x;
+        y = g_map.y;
+        vector<Cell> newGrid(x * y, {'-', 0});
+
+        for (int i = 0; i < 12; i++) {
+                advance(grid, newGrid, x, y);
                 cout << "Round " << i + 1 << '\n';
                 printMap(grid, x, y);
+        }
+}
+
+void initMap(char source, const string& filename, int x, int y, GridMap& g_map)
+{
+        if (source == 'f') {
+                parseFile(filename, g_map);
         }
 }
 
@@ -74,7 +87,7 @@ void printMap(const vector<Cell>& grid, int x, int y)
         cout << "\n";
 }
 
-GridMap parseFile(const string& filename)
+void parseFile(const string& filename, GridMap& g_map)
 {
         std::ifstream file(filename);
         if (!file) {
@@ -96,9 +109,8 @@ GridMap parseFile(const string& filename)
                 }
         }
 
-        GridMap g_map = {grid, x, y};
+        g_map = {grid, x, y};
         file.close();
-        return g_map;
 }
 
 vector<Cell> makeRandomGrid(int x, int y)
@@ -118,20 +130,18 @@ vector<Cell> makeRandomGrid(int x, int y)
         return grid;
 }
 
-vector<Cell> advance(const vector<Cell> &grid, int x, int y)
+void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y)
 {
-        vector<Cell> new_grid(x * y, {'-', 0});
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < x; ++j) {
                         Cell c = grid[i * y + j];
                         int neighbors = n_neighbors(grid, x, y, i, j);
 
-                        Cell new_c = nextGen(c, neighbors);
-                        new_grid[i * y + j] = new_c;
+                        updateCell(c.age, neighbors, newGrid[i * y + j]);
                 }
         }
 
-        return new_grid;
+        grid = newGrid;
 }
 
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy)
@@ -158,24 +168,13 @@ int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy)
         return neighbors;
 }
 
-Cell nextGen(const Cell& c, int neighbors)
+void updateCell(int age, int neighbors, Cell& new_c)
 {
-        Cell new_c = {'-', 0};
-        if (c.age >= 10) {
-                return new_c;
-        }
-
-        if (neighbors <= 1 || neighbors >= 4 || (neighbors == 2 && c.age == 0)) {
-                return new_c;
-        }
-
-        if (neighbors == 2) {
-                new_c.age = c.age > 0 ? c.age + 1 : c.age;
-                new_c.mark = c.age > 3 ? 'X' : 'x';
+        if (age >= 10 || neighbors <= 1 || neighbors >= 4 || (neighbors == 2 && age == 0)) {
+                new_c.mark = '-';
+                new_c.age = 0;
         } else {
-                new_c.age = c.age + 1;
-                new_c.mark = c.age > 3 ? 'X' : 'x';
+                new_c.age = age + 1;
+                new_c.mark = age >= 4 ? 'X' : 'x';
         }
-
-        return new_c;
 }
