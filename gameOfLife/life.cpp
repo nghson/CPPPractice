@@ -19,7 +19,6 @@ struct GridMap {
         int y;
 };
 
-void initMap(char source, const string& filename, int x, int y, GridMap& g_map);
 void parseFile(const string& filename, GridMap& g_map);
 void makeRandomGrid(int x, int y, vector<Cell>& grid);
 
