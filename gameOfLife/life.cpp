@@ -14,12 +14,6 @@ struct Cell {
         unsigned int age;
 };
 
-struct GridMap {
-        vector<Cell> grid;
-        int x;
-        int y;
-};
-
 void takeInput(const string& prompt, const string& error_msg,
         string& input, bool (*criteria)(const string&));
 bool checkFilename(const string& filename);
