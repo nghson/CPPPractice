@@ -128,7 +128,7 @@ void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
 {
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
-                        Cell c = grid[i * y + j];
+                        const Cell& c = grid[i * y + j];
                         int neighbors = n_neighbors(grid, x, y, i, j);
 
                         updateCell(c.age, neighbors, newGrid[i * y + j]);
