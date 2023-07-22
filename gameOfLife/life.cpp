@@ -218,5 +218,4 @@ void printMap(const vector<Cell>& grid, int x, int y)
                 }
                 cout << "\n";
         }
-        cout << "\n";
 }
