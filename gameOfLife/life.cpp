@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ios>
 #include <vector>
 #include <string>
 #include <random>
@@ -19,6 +20,9 @@ struct GridMap {
         int y;
 };
 
+void take_input(const string& prompt, const string& error_msg,
+        string& input, bool (*criteria)(const string&));
+
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y);
 void makeRandomGrid(int x, int y, vector<Cell>& grid);
 
@@ -26,6 +30,7 @@ void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
 void updateCell(int age, int neighbors, Cell& new_c);
 
+void initMap(vector<Cell>& grid);
 void play(vector<Cell>& grid, int x, int y);
 void printMap(const vector<Cell> &grid, int x, int y);
 
@@ -40,29 +45,43 @@ int main()
         bool flag = false;
         vector<Cell> grid;
         cout << "Read from (f)ile, or (r)andom? ";
-        while (!flag) {
-                cin >> command;
-                if (command == 'f') {
-                        cout << "Grid input file name? ";
-                        cin  >> filename;
-                        parseFile(filename, grid, x, y);
-                        flag = true;
-                } else if (command == 'r') {
-                        cout << "How many rows? ";
-                        cin >> x;
-                        cout << "How many columns? ";
-                        cin >> y;
-                        makeRandomGrid(x, y, grid);
-                        flag = true;
-                } else {
-                        cout << "Unknown option, try again ";
-                }
-        }
+        //while (!flag) {
+        //        cin >> command;
+        //        if (command == 'f') {
+        //                cout << "Grid input file name? ";
+        //                cin  >> filename;
+        //                parseFile(filename, grid, x, y);
+        //                flag = true;
+        //        } else if (command == 'r') {
+        //                cout << "How many rows? ";
+        //                cin >> x;
+        //                cout << "How many columns? ";
+        //                cin >> y;
+        //                makeRandomGrid(x, y, grid);
+        //                flag = true;
+        //        } else {
+        //                cout << "Unknown option, try again ";
+        //        }
+        //}
+
+        initMap(grid);
 
 
-        printMap(grid, x, y);
-        play(grid, x, y);
+        //printMap(grid, x, y);
+        //play(grid, x, y);
         cout << "Have a nice life!" << std::endl;
+}
+
+void initMap(vector<Cell>& grid)
+{
+        string input;
+        take_input("Read from (f)ile, or (r)andom? ", "Invalid choice, try again.",
+                input, [](const string& s) { return (s == "f" || s == "r"); });
+        if (input == "f") {
+                cout << "f\n";        
+        } else if (input == "r") {
+                cout << "r\n";
+        }
 }
 
 void play(vector<Cell>& grid, int x, int y)
@@ -84,6 +103,21 @@ void play(vector<Cell>& grid, int x, int y)
                 }
         }
 
+}
+
+void take_input(const string& prompt, const string& error_msg,
+        string& input, bool (*criteria)(const string&))
+{
+        bool correct = false;
+        while (!correct) {
+                cout << prompt; 
+                std::getline(cin, input);
+                if (cin && criteria(input)) {
+                        correct = true;
+                } else {
+                        cout << error_msg << std::endl;
+                }
+        }
 }
 
 void printMap(const vector<Cell>& grid, int x, int y)
