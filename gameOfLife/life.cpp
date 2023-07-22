@@ -22,15 +22,17 @@ struct GridMap {
 
 void take_input(const string& prompt, const string& error_msg,
         string& input, bool (*criteria)(const string&));
+bool checkFilename(const string& filename);
+bool isNumber(const string& input);
 
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y);
-void makeRandomGrid(int x, int y, vector<Cell>& grid);
+void makeRandomGrid(vector<Cell>& grid, int x, int y);
 
 void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
 void updateCell(int age, int neighbors, Cell& new_c);
 
-void initMap(vector<Cell>& grid);
+void initMap(vector<Cell>& grid, int& x, int& y);
 void play(vector<Cell>& grid, int x, int y);
 void printMap(const vector<Cell> &grid, int x, int y);
 
@@ -38,50 +40,54 @@ int main()
 {
         cout << "Welcome to the Game of life\nGame start!\n\n";
 
-        char command;
-        string filename;
+        cout << "Read from (f)ile, or (r)andom? ";
         int x;
         int y;
-        bool flag = false;
         vector<Cell> grid;
-        cout << "Read from (f)ile, or (r)andom? ";
-        //while (!flag) {
-        //        cin >> command;
-        //        if (command == 'f') {
-        //                cout << "Grid input file name? ";
-        //                cin  >> filename;
-        //                parseFile(filename, grid, x, y);
-        //                flag = true;
-        //        } else if (command == 'r') {
-        //                cout << "How many rows? ";
-        //                cin >> x;
-        //                cout << "How many columns? ";
-        //                cin >> y;
-        //                makeRandomGrid(x, y, grid);
-        //                flag = true;
-        //        } else {
-        //                cout << "Unknown option, try again ";
-        //        }
-        //}
+        initMap(grid, x, y);
 
-        initMap(grid);
-
-
-        //printMap(grid, x, y);
+        printMap(grid, x, y);
         //play(grid, x, y);
         cout << "Have a nice life!" << std::endl;
 }
 
-void initMap(vector<Cell>& grid)
+void initMap(vector<Cell>& grid, int& x, int& y)
 {
         string input;
         take_input("Read from (f)ile, or (r)andom? ", "Invalid choice, try again.",
                 input, [](const string& s) { return (s == "f" || s == "r"); });
         if (input == "f") {
-                cout << "f\n";        
+                take_input("Grid input file name? ", "Unable to open that file. Try again.",
+                        input, checkFilename);
+                parseFile(input, grid, x, y);
         } else if (input == "r") {
-                cout << "r\n";
+                take_input("How many rows? ", "Please put a valid nubmer.",
+                        input, isNumber);
+                x = std::stoi(input);
+                take_input("How many columns? ", "Please put a valid nubmer.",
+                        input, isNumber);
+                y = std::stoi(input);
+                makeRandomGrid(grid, x, y);
         }
+}
+
+bool checkFilename(const string& filename)
+{
+        std::ifstream file(filename);
+        if (file) {
+                return true;
+        } else {
+                return false;
+        }
+}
+
+bool isNumber(const string& input)
+{
+        string::const_iterator it = input.begin();
+        while (it != input.end() && std::isdigit(*it)) {
+                ++it;
+        }
+        return !input.empty() && it == input.end();
 }
 
 void play(vector<Cell>& grid, int x, int y)
@@ -139,10 +145,12 @@ void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
                 throw std::runtime_error("There is no file " + filename);
         }
 
-        file >> x >> y >> std::ws;
-        vector<Cell> n_grid(x * y, {'-', 0});
-
         string s;
+        std::getline(file, s);
+        x = std::stoi(s);
+        std::getline(file, s);
+        y = std::stoi(s);
+        vector<Cell> n_grid(x * y, {'-', 0});
         for (int i = 0; i < x; ++i) {
                 std::getline(file, s);
                 for (int j = 0; j < y; ++j) {
@@ -158,7 +166,7 @@ void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
         file.close();
 }
 
-void makeRandomGrid(int x, int y, vector<Cell>& grid)
+void makeRandomGrid(vector<Cell>& grid, int x, int y)
 {
         std::default_random_engine e;
         std::uniform_real_distribution<double> u(0, 1);
