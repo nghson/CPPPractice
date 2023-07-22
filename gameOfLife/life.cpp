@@ -20,7 +20,7 @@ struct GridMap {
         int y;
 };
 
-void take_input(const string& prompt, const string& error_msg,
+void takeInput(const string& prompt, const string& error_msg,
         string& input, bool (*criteria)(const string&));
 bool checkFilename(const string& filename);
 bool isNumber(const string& input);
@@ -47,27 +47,22 @@ int main()
         initMap(grid, x, y);
 
         printMap(grid, x, y);
-        //play(grid, x, y);
+        play(grid, x, y);
         cout << "Have a nice life!" << std::endl;
 }
 
-void initMap(vector<Cell>& grid, int& x, int& y)
+void takeInput(const string& prompt, const string& error_msg,
+        string& input, bool (*criteria)(const string&))
 {
-        string input;
-        take_input("Read from (f)ile, or (r)andom? ", "Invalid choice, try again.",
-                input, [](const string& s) { return (s == "f" || s == "r"); });
-        if (input == "f") {
-                take_input("Grid input file name? ", "Unable to open that file. Try again.",
-                        input, checkFilename);
-                parseFile(input, grid, x, y);
-        } else if (input == "r") {
-                take_input("How many rows? ", "Please put a valid nubmer.",
-                        input, isNumber);
-                x = std::stoi(input);
-                take_input("How many columns? ", "Please put a valid nubmer.",
-                        input, isNumber);
-                y = std::stoi(input);
-                makeRandomGrid(grid, x, y);
+        bool correct = false;
+        while (!correct) {
+                cout << prompt; 
+                std::getline(cin, input);
+                if (cin && criteria(input)) {
+                        correct = true;
+                } else {
+                        cout << error_msg << std::endl;
+                }
         }
 }
 
@@ -88,54 +83,6 @@ bool isNumber(const string& input)
                 ++it;
         }
         return !input.empty() && it == input.end();
-}
-
-void play(vector<Cell>& grid, int x, int y)
-{
-        bool quit = false;
-        char command;
-        vector<Cell> newGrid(x * y, {'-', 0});
-        while (!quit) { 
-                cout << "a)nimate, t)ick, s)creenshot, q)uit? ";
-                cin >> command;
-                if (command == 't') {
-                        advance(grid, newGrid, x, y);
-                        printMap(grid, x, y);
-                }
-                else if (command == 'q') {
-                        quit = true;
-                } else {
-                        cout << "Unknown option, try again\n";
-                }
-        }
-
-}
-
-void take_input(const string& prompt, const string& error_msg,
-        string& input, bool (*criteria)(const string&))
-{
-        bool correct = false;
-        while (!correct) {
-                cout << prompt; 
-                std::getline(cin, input);
-                if (cin && criteria(input)) {
-                        correct = true;
-                } else {
-                        cout << error_msg << std::endl;
-                }
-        }
-}
-
-void printMap(const vector<Cell>& grid, int x, int y)
-{
-        for (int i = 0; i < x; ++i) {
-                for (int j = 0; j < y; ++j) {
-                        Cell cell = grid[i * y + j];
-                        cout << cell.mark;
-                }
-                cout << "\n";
-        }
-        cout << "\n";
 }
 
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
@@ -200,7 +147,6 @@ void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy)
 {
         int neighbors = 0;
-
         int low_x = std::max(0, dx - 1);
         int hi_x = std::min(x - 1, dx + 1);
         int low_y = std::max(0, dy - 1);
@@ -230,4 +176,57 @@ void updateCell(int age, int neighbors, Cell& new_c)
                 new_c.age = age + 1;
                 new_c.mark = age >= 4 ? 'X' : 'x';
         }
+}
+
+void initMap(vector<Cell>& grid, int& x, int& y)
+{
+        string input;
+        takeInput("Read from (f)ile, or (r)andom? ", "Invalid choice, try again.",
+                input, [](const string& s) { return (s == "f" || s == "r"); });
+        if (input == "f") {
+                takeInput("Grid input file name? ", "Unable to open that file. Try again.",
+                        input, checkFilename);
+                parseFile(input, grid, x, y);
+        } else if (input == "r") {
+                takeInput("How many rows? ", "Please put a valid nubmer.",
+                        input, isNumber);
+                x = std::stoi(input);
+                takeInput("How many columns? ", "Please put a valid nubmer.",
+                        input, isNumber);
+                y = std::stoi(input);
+                makeRandomGrid(grid, x, y);
+        }
+}
+
+void play(vector<Cell>& grid, int x, int y)
+{
+        bool quit = false;
+        char command;
+        vector<Cell> newGrid(x * y, {'-', 0});
+        while (!quit) { 
+                cout << "a)nimate, t)ick, s)creenshot, q)uit? ";
+                cin >> command;
+                if (command == 't') {
+                        advance(grid, newGrid, x, y);
+                        printMap(grid, x, y);
+                }
+                else if (command == 'q') {
+                        quit = true;
+                } else {
+                        cout << "Unknown option, try again\n";
+                }
+        }
+
+}
+
+void printMap(const vector<Cell>& grid, int x, int y)
+{
+        for (int i = 0; i < x; ++i) {
+                for (int j = 0; j < y; ++j) {
+                        Cell cell = grid[i * y + j];
+                        cout << cell.mark;
+                }
+                cout << "\n";
+        }
+        cout << "\n";
 }
