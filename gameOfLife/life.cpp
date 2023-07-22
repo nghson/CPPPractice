@@ -148,14 +148,10 @@ int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy)
 
         for (int i = low_x; i <= hi_x; ++i) {
                 for (int j = low_y; j <= hi_y; ++j) {
-                        if (grid[i * y + j].mark != '-') {
+                        if (grid[i * y + j].mark != '-' && !(i == dx && j == dy)) {
                                 ++neighbors;
                         }
                 }
-        }
-
-        if (grid[dx * y + dy].mark != '-') {
-                --neighbors;
         }
 
         return neighbors;
