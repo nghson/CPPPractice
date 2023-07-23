@@ -114,19 +114,17 @@ void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
         x = std::stoi(s);
         std::getline(file, s);
         y = std::stoi(s);
-        vector<Cell> n_grid(x * y, {'-', 0});
+        grid = vector<Cell>(x * y, {'-', 0});
         for (int i = 0; i < x; ++i) {
                 std::getline(file, s);
                 for (int j = 0; j < y; ++j) {
                         if (s[j] == 'X') {
-                                Cell& c = n_grid[i * y + j];
+                                Cell& c = grid[i * y + j];
                                 c.mark = 'x';
                                 c.age = 1;
                         }
                 }
         }
-        grid = n_grid;
-
         file.close();
 }
 
@@ -135,17 +133,16 @@ void makeRandomGrid(vector<Cell>& grid, int x, int y)
         std::random_device rd;
         std::default_random_engine e(rd());
         std::uniform_real_distribution<double> u(0, 1);
-        vector<Cell> n_grid(x * y, {'-', 0});
+        grid = vector<Cell>(x * y, {'-', 0});
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
                         if (u(e) > 0.5) {
-                                Cell& c = n_grid[i * y + j];
+                                Cell& c = grid[i * y + j];
                                 c.mark = 'x';
                                 c.age = 1;
                         }
                 }
         }
-        grid = n_grid;
 }
 
 void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y, bool wrap)
