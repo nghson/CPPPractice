@@ -199,7 +199,7 @@ void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y
                 clear();
                 advance(grid, newGrid, x, y);
                 printMap(grid, x, y);
-                std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
 }
 
