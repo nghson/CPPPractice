@@ -7,6 +7,9 @@
 #include <fstream>
 #include <exception>
 #include <unordered_set>
+#include <cstdlib>
+#include <chrono>
+#include <thread>
 
 using std::cout, std::cin, std::vector, std::string;
 
@@ -27,6 +30,9 @@ void makeRandomGrid(vector<Cell>& grid, int x, int y);
 void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
 int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
 void updateCell(int age, int neighbors, Cell& new_c);
+
+void clear();
+void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y);
 
 void initMap(vector<Cell>& grid, int& x, int& y);
 void play(vector<Cell>& grid, int x, int y);
@@ -174,6 +180,29 @@ void updateCell(int age, int neighbors, Cell& new_c)
         }
 }
 
+void clear()
+{
+#if defined _WIN32
+        system("cls");
+        //clrscr(); // including header file : conio.h
+#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+        system("clear");
+        //std::cout<< u8"\033[2J\033[1;1H"; //Using ANSI Escape Sequences 
+#elif defined (__APPLE__)
+        system("clear");
+#endif
+}
+
+void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
+{
+        for (int i = 0; i < rounds; ++i) {
+                clear();
+                advance(grid, newGrid, x, y);
+                printMap(grid, x, y);
+                std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        }
+}
+
 void initMap(vector<Cell>& grid, int& x, int& y)
 {
         string input;
@@ -211,7 +240,10 @@ void play(vector<Cell>& grid, int x, int y)
                 } else if (command == "s") {
                         cout << "screenshot\n";
                 } else if (command == "a") {
-                        cout << "animate\n";
+                        takeInput("How many frames? ", "Illegal integer format. Try again.",
+                                command, isNumber);
+                        int rounds = std::stoi(command);
+                        animate(rounds, grid, newGrid, x, y);
                 }
         }
 
