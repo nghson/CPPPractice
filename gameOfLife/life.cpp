@@ -28,12 +28,12 @@ bool checkPlayInput(const string& input);
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y);
 void makeRandomGrid(vector<Cell>& grid, int x, int y);
 
-void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y);
-int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy);
+void advance(vector<Cell> &grid, vector<Cell>& newGrid, int x, int y, bool wrap);
+int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy, bool wrap);
 void updateCell(int age, int neighbors, Cell& new_c);
 
 void clear();
-void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y);
+void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y, bool wrap);
 
 void initMap(vector<Cell>& grid, int& x, int& y);
 void play(vector<Cell>& grid, int x, int y);
@@ -52,7 +52,6 @@ int main()
         while (!quit) {
                 initMap(grid, x, y);
 
-                printMap(grid, x, y);
                 play(grid, x, y);
 
                 takeInput("Simulate another colony (y/n)? ", "Invalid choice. Try again.",
@@ -149,28 +148,30 @@ void makeRandomGrid(vector<Cell>& grid, int x, int y)
         grid = n_grid;
 }
 
-void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
+void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y, bool wrap)
 {
         for (int i = 0; i < x; ++i) {
                 for (int j = 0; j < y; ++j) {
                         const Cell& c = grid[i * y + j];
-                        int neighbors = n_neighbors(grid, x, y, i, j);
+                        int neighbors = n_neighbors(grid, x, y, i, j, wrap);
                         updateCell(c.age, neighbors, newGrid[i * y + j]);
                 }
         }
         grid = newGrid;
 }
 
-int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy)
+int n_neighbors(const vector<Cell>& grid, int x, int y, int dx, int dy, bool wrap)
 {
         int neighbors = 0;
-        int low_x = std::max(0, dx - 1);
-        int hi_x = std::min(x - 1, dx + 1);
-        int low_y = std::max(0, dy - 1);
-        int hi_y = std::min(y - 1, dy + 1);
+        int low_x = wrap ? dx - 1 : std::max(0, dx - 1);
+        int hi_x = wrap ? dx + 1 : std::min(x - 1, dx + 1);
+        int low_y = wrap ? dy - 1 : std::max(0, dy - 1);
+        int hi_y = wrap ? dy + 1 : std::min(y - 1, dy + 1);
 
-        for (int i = low_x; i <= hi_x; ++i) {
-                for (int j = low_y; j <= hi_y; ++j) {
+        for (int r = low_x; r <= hi_x; ++r) {
+                for (int c = low_y; c <= hi_y; ++c) {
+                        int i = (r + x) % x;
+                        int j = (c + y) % y;
                         if (grid[i * y + j].mark != '-' && !(i == dx && j == dy)) {
                                 ++neighbors;
                         }
@@ -204,11 +205,11 @@ void clear()
 #endif
 }
 
-void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
+void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y, bool wrap)
 {
         for (int i = 0; i < rounds; ++i) {
                 clear();
-                advance(grid, newGrid, x, y);
+                advance(grid, newGrid, x, y, wrap);
                 printMap(grid, x, y);
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
@@ -239,11 +240,15 @@ void play(vector<Cell>& grid, int x, int y)
         bool quit = false;
         string command;
         vector<Cell> newGrid(x * y, {'-', 0});
+        takeInput("Should the simulation wrap around the grid (y/n)? ", "Invalid choice. Try again.",
+                command, [](const string& s) { return s == "y" || s == "n"; });
+        bool wrap = command == "y" ? true : false;
+        printMap(grid, x, y);
         while (!quit) { 
                 takeInput("a)nimate, t)ick, s)creenshot, q)uit? ", "Invalid choice. Try again.",
                         command, checkPlayInput);
                 if (command == "t") {
-                        advance(grid, newGrid, x, y);
+                        advance(grid, newGrid, x, y, wrap);
                         printMap(grid, x, y);
                 }
                 else if (command == "q") {
@@ -254,7 +259,7 @@ void play(vector<Cell>& grid, int x, int y)
                         takeInput("How many frames? ", "Illegal integer format. Try again.",
                                 command, isNumber);
                         int rounds = std::stoi(command);
-                        animate(rounds, grid, newGrid, x, y);
+                        animate(rounds, grid, newGrid, x, y, wrap);
                 }
         }
 
