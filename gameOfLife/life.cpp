@@ -45,10 +45,20 @@ int main()
         int x;
         int y;
         vector<Cell> grid;
-        initMap(grid, x, y);
+        bool quit = false;
+        string input;
 
-        printMap(grid, x, y);
-        play(grid, x, y);
+        while (!quit) {
+                initMap(grid, x, y);
+
+                printMap(grid, x, y);
+                play(grid, x, y);
+
+                takeInput("Simulate another colony (y/n)? ", "Invalid choice. Try again.",
+                        input, [](const string& s) { return s == "y" || s == "n"; });
+                quit = input == "n" ? true : false;
+        }
+
         cout << "Have a nice life!" << std::endl;
 }
 
