@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fstream>
 #include <exception>
+#include <unordered_set>
 
 using std::cout, std::cin, std::vector, std::string;
 
@@ -18,6 +19,7 @@ void takeInput(const string& prompt, const string& error_msg,
         string& input, bool (*criteria)(const string&));
 bool checkFilename(const string& filename);
 bool isNumber(const string& input);
+bool checkPlayInput(const string& input);
 
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y);
 void makeRandomGrid(vector<Cell>& grid, int x, int y);
@@ -34,7 +36,6 @@ int main()
 {
         cout << "Welcome to the Game of life\nGame start!\n\n";
 
-        cout << "Read from (f)ile, or (r)andom? ";
         int x;
         int y;
         vector<Cell> grid;
@@ -77,6 +78,12 @@ bool isNumber(const string& input)
                 ++it;
         }
         return !input.empty() && it == input.end();
+}
+
+bool checkPlayInput(const string& input)
+{
+        std::unordered_set<string> acceptable_input = {"a", "t", "s", "q"};
+        return acceptable_input.find(input) != acceptable_input.end();
 }
 
 void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
@@ -130,7 +137,6 @@ void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
                 for (int j = 0; j < y; ++j) {
                         const Cell& c = grid[i * y + j];
                         int neighbors = n_neighbors(grid, x, y, i, j);
-
                         updateCell(c.age, neighbors, newGrid[i * y + j]);
                 }
         }
@@ -191,19 +197,21 @@ void initMap(vector<Cell>& grid, int& x, int& y)
 void play(vector<Cell>& grid, int x, int y)
 {
         bool quit = false;
-        char command;
+        string command;
         vector<Cell> newGrid(x * y, {'-', 0});
         while (!quit) { 
-                cout << "a)nimate, t)ick, s)creenshot, q)uit? ";
-                cin >> command;
-                if (command == 't') {
+                takeInput("a)nimate, t)ick, s)creenshot, q)uit? ", "Invalid choice. Try again.",
+                        command, checkPlayInput);
+                if (command == "t") {
                         advance(grid, newGrid, x, y);
                         printMap(grid, x, y);
                 }
-                else if (command == 'q') {
+                else if (command == "q") {
                         quit = true;
-                } else {
-                        cout << "Unknown option, try again\n";
+                } else if (command == "s") {
+                        cout << "screenshot\n";
+                } else if (command == "a") {
+                        cout << "animate\n";
                 }
         }
 
