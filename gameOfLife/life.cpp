@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <random>
+#include <ctime>
 #include <algorithm>
 #include <fstream>
 #include <exception>
@@ -132,7 +133,8 @@ void parseFile(const string& filename, vector<Cell>& grid, int& x, int& y)
 
 void makeRandomGrid(vector<Cell>& grid, int x, int y)
 {
-        std::default_random_engine e;
+        std::random_device rd;
+        std::default_random_engine e(rd());
         std::uniform_real_distribution<double> u(0, 1);
         vector<Cell> n_grid(x * y, {'-', 0});
         for (int i = 0; i < x; ++i) {
@@ -156,7 +158,6 @@ void advance(vector<Cell>& grid, vector<Cell>& newGrid, int x, int y)
                         updateCell(c.age, neighbors, newGrid[i * y + j]);
                 }
         }
-
         grid = newGrid;
 }
 
