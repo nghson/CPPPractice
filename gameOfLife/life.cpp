@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 using std::cout, std::cin, std::vector, std::string;
 
@@ -34,6 +35,8 @@ void updateCell(int age, int neighbors, Cell& new_c);
 
 void clear();
 void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y, bool wrap);
+
+void screenshot(std::ostream& os, const vector<Cell>& grid, int x, int y);
 
 void initMap(vector<Cell>& grid, int& x, int& y);
 void play(vector<Cell>& grid, int x, int y);
@@ -212,6 +215,16 @@ void animate(int rounds, vector<Cell>& grid, vector<Cell>& newGrid, int x, int y
         }
 }
 
+void screenshot(std::ostream& os, const vector<Cell>& grid, int x, int y)
+{
+        for (int i = 0; i < x; ++i) {
+                for (int j = 0; j < y; ++j) {
+                        os << grid[i * y + j].mark;
+                }
+                os << '\n';
+        }
+}
+
 void initMap(vector<Cell>& grid, int& x, int& y)
 {
         string input;
@@ -251,7 +264,15 @@ void play(vector<Cell>& grid, int x, int y)
                 else if (command == "q") {
                         quit = true;
                 } else if (command == "s") {
-                        cout << "screenshot\n";
+                        cout << "Save to file? ";
+                        std::getline(cin, command);
+                        std::ofstream savefile(command);
+                        if (!savefile) {
+                                cout << "Can't create file.\n";
+                        } else {
+                                screenshot(savefile, grid, x, y);
+                                savefile.close();
+                        }
                 } else if (command == "a") {
                         takeInput("How many frames? ", "Illegal integer format. Try again.",
                                 command, isNumber);
