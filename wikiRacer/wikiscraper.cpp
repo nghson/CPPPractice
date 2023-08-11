@@ -33,7 +33,7 @@ unordered_set<string> findWikiLinks(const string& page_html)
         auto link_head = std::search(page_html.begin(), page_end, l1, l2);
         while (link_head != page_end) {
                 auto link_end = std::find(link_head + 6, page_end, '\"');
-                string link{link_head, ++link_end};
+                string link{link_head + 12, link_end};
                 
                 if (isValid(link)) {
                         s.insert(link);
