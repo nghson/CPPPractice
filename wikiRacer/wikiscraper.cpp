@@ -25,19 +25,19 @@ unordered_set<string> findWikiLinks(const string& page_html)
 {
         unordered_set<string> s;
 
-        string link_prefix = "href=\"/wiki/";
+        const string link_prefix = "href=\"/wiki/";
+        const char link_suffix = '\"';
         
         auto page_end = page_html.end();
         auto l1 = link_prefix.begin();
         auto l2 = link_prefix.end();
         auto link_head = std::search(page_html.begin(), page_end, l1, l2);
         while (link_head != page_end) {
-                auto link_end = std::find(link_head + 6, page_end, '\"');
+                auto link_end = std::find(link_head + 6, page_end, link_suffix);
                 string link{link_head + 12, link_end};
                 
                 if (isValid(link)) {
                         s.insert(link);
-                        cout << "The link is " << link << '\n';
                 }
                 
                 link_head = std::search(++link_head, page_end, l1, l2);
