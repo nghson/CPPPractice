@@ -2,14 +2,24 @@
 #define TRIE_H
 
 #include <string>
+#include "Node.h"
 
 class Trie {
-private:
-
 public:
-        void insert(std::string s);
-        void del(std::string s);
-        bool contains(std::string s);
+        Trie();
+        Trie(const std::string& filename);
+
+        void insert(const std::string& s);
+        void remove(const std::string& s);
+        bool contains(const std::string& s);
+
+private:
+        struct Node {
+
+        };
+
+        Node* root;
+
 };
 
 #endif
