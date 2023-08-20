@@ -1,17 +1,26 @@
 #include <string>
+#include <vector>
 #include "trie.h"
+#include "Node.h"
 
-void Trie::insert(std::string s)
+using std::string;
+
+Trie::Trie()
+{
+}
+
+
+void Trie::insert(const string& s)
 {
 
 }
 
-void Trie::del(std::string s)
+void Trie::remove(const string& s)
 {
 
 }
 
-bool Trie::contains(std::string s)
+bool Trie::contains(const string& s)
 {
 
 }

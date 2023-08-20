@@ -15,7 +15,8 @@ public:
 
 private:
         struct Node {
-
+        private:
+                Node* children[26];
         };
 
         Node* root;
