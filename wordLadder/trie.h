@@ -8,19 +8,44 @@ class Trie {
 public:
         Trie();
         Trie(const std::string& filename);
+        ~Trie();
 
         void insert(const std::string& s);
         void remove(const std::string& s);
         bool contains(const std::string& s);
 
 private:
-        struct Node {
+        class Node {
+        public:
+                Node()
+                {
+                        for (int i = 0; i < 26; ++i) {
+                                children[i] = nullptr;
+                        }
+                }
+
+                bool isLeaf()
+                {
+                        return childCount() == 0;
+                }
+
+                int childCount()
+                {
+                        int count = 0;
+                        for (int i = 0; i < 26; i++) {
+                                if (children[i] != nullptr) {
+                                        count++;
+                                }
+                        }
+                        return count;
+                }
         private:
                 Node* children[26];
         };
 
         Node* root;
 
+        void deleteTree();
 };
 
 #endif
