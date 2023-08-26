@@ -10,7 +10,7 @@ public:
         Trie(const std::string& filename);
         ~Trie();
 
-        void insert(const std::string& s);
+        bool insert(const std::string& s);
         void remove(const std::string& s);
         bool contains(const std::string& s);
 
@@ -45,6 +45,8 @@ private:
 
         Node* root;
 
+
+        bool _insert(Node*& node, const std::string& word);
         void deleteTree();
 };
 
