@@ -2,11 +2,13 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <vector>
 #include "wikiscraper.h"
 
+using std::cout;
 using std::string;
 using std::unordered_set;
-using std::cout;
+using std::vector;
 
 /*
 A link must be of the form
@@ -44,4 +46,21 @@ unordered_set<string> findWikiLinks(const string& page_html)
         }
 
         return s;
+}
+
+vector<string> findWikiLadder(const string& start_page, const string& end_page)
+{
+        vector<string> ladder{start_page};
+
+}
+
+int nCommonLinks(const unordered_set<string>& current_set, const unordered_set<string>& target_set)
+{
+        int n = 0;
+        for (auto i = current_set.begin(); i != current_set.end(); ++i) {
+                if (target_set.count(*i)) {
+                        n++;
+                }
+        }
+        return n;
 }
