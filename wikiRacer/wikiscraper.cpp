@@ -48,13 +48,15 @@ unordered_set<string> findWikiLinks(const string& page_html)
         return s;
 }
 
-vector<string> findWikiLadder(const string& start_page, const string& end_page)
+vector<string> findWikiLadder(const string& start_page,
+                                const string& end_page)
 {
         vector<string> ladder{start_page};
 
 }
 
-int nCommonLinks(const unordered_set<string>& current_set, const unordered_set<string>& target_set)
+int nCommonLinks(const unordered_set<string>& current_set,
+                 const unordered_set<string>& target_set)
 {
         int n = 0;
         for (auto i = current_set.begin(); i != current_set.end(); ++i) {
@@ -63,4 +65,15 @@ int nCommonLinks(const unordered_set<string>& current_set, const unordered_set<s
                 }
         }
         return n;
+}
+
+bool comp_ladder(const vector<string>& ladder1,
+                 const vector<string>& ladder2)
+{
+
+}
+
+unordered_set<string> getLinksFromName(const string& page_name)
+{
+
 }
