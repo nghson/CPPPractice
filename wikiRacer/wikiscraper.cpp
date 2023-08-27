@@ -29,9 +29,9 @@ unordered_set<string> findWikiLinks(const string& page_html)
         const char link_suffix = '\"';
         
         auto page_end = page_html.end();
-        auto l1 = link_prefix.begin();
-        auto l2 = link_prefix.end();
-        auto link_head = std::search(page_html.begin(), page_end, l1, l2);
+        auto prefix_head = link_prefix.begin();
+        auto prefix_end = link_prefix.end();
+        auto link_head = std::search(page_html.begin(), page_end, prefix_head, prefix_end);
         while (link_head != page_end) {
                 auto link_end = std::find(link_head + 6, page_end, link_suffix);
                 string link{link_head + 12, link_end};
@@ -40,7 +40,7 @@ unordered_set<string> findWikiLinks(const string& page_html)
                         s.insert(link);
                 }
                 
-                link_head = std::search(++link_head, page_end, l1, l2);
+                link_head = std::search(++link_head, page_end, prefix_head, prefix_end);
         }
 
         return s;
