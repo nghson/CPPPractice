@@ -1,9 +1,10 @@
+#include <iostream>
 #include <string>
 #include <vector>
 #include <cctype>
 #include "trie.h"
-#include "Node.h"
 
+using std::cout;
 using std::string;
 
 bool clean(string& s);
@@ -31,7 +32,16 @@ void Trie::deleteTree()
 
 bool Trie::insert(const string& s)
 {
+        if (s.empty()) {
+                return false;
+        }
 
+        string w = s;
+        if (!clean(w)) {
+                return false;
+        }
+
+        return _insert(root, w, w);
 }
 
 void Trie::remove(const string& s)
@@ -44,9 +54,23 @@ bool Trie::contains(const string& s)
 
 }
 
-bool _insert(Node*& node, const string& word)
+bool Trie::_insert(Node*& node, const string& word, const string& original)
 {
+        if (!node) {
+                node = new Node();
+        }
 
+        if (word.empty()) {
+                node->isWord();
+                if (node->isWord()) {
+                        return false;
+                }
+                node->setWord(true);
+                _allWords.insert(original);
+                return true;
+        }
+
+        return _insert(node->child(word[0]), word.substr(1), original);
 }
 
 bool clean(string& s)
@@ -64,4 +88,11 @@ bool clean(string& s)
                 s.erase(ind, l - ind);
         }
         return true;
+}
+
+void Trie::printAll()
+{
+        for (auto i = _allWords.begin(); i != _allWords.end(); ++i) {
+                cout << *i << '\n';
+        }
 }
