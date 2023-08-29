@@ -18,6 +18,7 @@ private:
         public:
                 Node()
                 {
+                        _isWord = false;
                         for (int i = 0; i < 26; ++i) {
                                 children[i] = nullptr;
                         }
@@ -43,8 +44,20 @@ private:
                         }
                         return count;
                 }
+
+                bool isWord()
+                {
+                        return _isWord;
+                }
+
+                void setWord(bool v)
+                {
+                        _isWord = v;
+                }
+
         private:
                 Node* children[26];
+                bool _isWord;
         };
 
         Node* root;
