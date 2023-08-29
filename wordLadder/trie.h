@@ -2,7 +2,6 @@
 #define TRIE_H
 
 #include <string>
-#include "Node.h"
 
 class Trie {
 public:
@@ -22,6 +21,11 @@ private:
                         for (int i = 0; i < 26; ++i) {
                                 children[i] = nullptr;
                         }
+                }
+
+                Node*& child(char c)
+                {
+                        return children[c - 'a'];
                 }
 
                 bool isLeaf()
